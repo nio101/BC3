@@ -52,3 +52,11 @@ reads the water metrics and pushes them to influxDB
 #### ESP_bedroom
 #### ESP_outdoor
 
+## Dev notes
+... are under the _notes/_ subdirectory
+
+## Progress
++ [ ] first ESP device able to update OTA
+  + [ ] set up a dedicated dockerized nginx setup to serve the git directory, and generate basic checksums for any ESP .py file
+  + [ ] develop the bootstrap python scripts & test them
++ [ ] add an e-paper display to the ESP device
