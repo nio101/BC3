@@ -2,7 +2,7 @@
 My home automation solution
 
 ## Design ✏️
-We we'll be using the following hardware:
+We we'll be using the following hardware/software:
 ### _**bc-hq**_ 💻
 **intel NUC** running **ubuntu server**, and hosting:
 + **influxdb** (as a docker container)
@@ -15,6 +15,7 @@ We we'll be using the following hardware:
 + various python modules:
   + **SMS_operator**
     + conversationnal agent interface with the other modules to allow reporting and commands over SMS
+      + using **chatterbot** with a dedicated logic adapter: https://chatterbot.readthedocs.io/en/stable/logic/create-a-logic-adapter.html
   + **scheduler**
     + time and calendar reminders using **SMS_operator** and **interphone** modules
 
