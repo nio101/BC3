@@ -32,18 +32,18 @@ See the official store page here: https://www.aliexpress.com/store/product/LOLIN
 + and then you can use `ampy -p /dev/ttyUSB0 get /boot.py` to read/write to the filesystem
 + some other basic fw-related stuff:
   + to double-check the flash size:
-    ```import esp
-       esp.flash_size()
-       > 4194304
+```import esp
+   esp.flash_size()
+   > 4194304
 ```
   + => 4MB: ok!
   + to double-check the fs size:
-    ```import uos
-       fs_stat = uos.statvfs('/')
-       fs_size = fs_stat[0] * fs_stat[2]
-       fs_free = fs_stat[0] * fs_stat[3]
-       print("File System Size {:,} - Free Space {:,}".format(fs_size, fs_free))
-       > File System Size 2,072,576 - Free Space 2,068,480
+```import uos
+   fs_stat = uos.statvfs('/')
+   fs_size = fs_stat[0] * fs_stat[2]
+   fs_free = fs_stat[0] * fs_stat[3]
+   print("File System Size {:,} - Free Space {:,}".format(fs_size, fs_free))
+   > File System Size 2,072,576 - Free Space 2,068,480
 ```
   + so we have a 4MB flash size split between 2MB for the micropython firmware, and 2MB for the filesystem.
 
