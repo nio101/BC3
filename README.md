@@ -59,4 +59,14 @@ reads the water metrics and pushes them to influxDB
 + [ ] first ESP device able to update OTA
   + [ ] set up a dedicated dockerized nginx setup to serve the git directory, and generate basic checksums for any ESP .py file
   + [ ] develop the bootstrap python scripts & test them
+    + [ ] set up and flash an ESP32 pro device
+    + [ ] set up work env, how to easily and conveniently send/run scripts
+    + [ ] test read/write to flash os
+    + [ ] test import of other python scripts
+    + [ ] test SD card read/write
+    + [ ] test local web server
+    + [ ] test local web client, get the checksum values for a module directory
+    + [ ] test local web client file download with chunk/streaming to flahs os (try with big files to SD card)
+    + [ ] specify, document and implement the bootstrapping with OTA update (rewrite reboot scripts if necessary, using a normal boot, and an update boot)
 + [ ] add an e-paper display to the ESP device
+
