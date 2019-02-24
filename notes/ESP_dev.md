@@ -36,7 +36,7 @@ See the official store page here: https://www.aliexpress.com/store/product/LOLIN
    esp.flash_size()
    > 4194304
 ```
-  + => 4MB: ok!
+
   + to double-check the fs size:
 ```import uos
    fs_stat = uos.statvfs('/')
