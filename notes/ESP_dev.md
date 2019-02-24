@@ -4,17 +4,26 @@
 
 Let's start with the LOLIN ESP32 pro (https://wiki.wemos.cc/products:d32:d32_pro)
 
-The first version was fitted with:
-+ 4MB FLASH
-+ 4MB PSRAM
+### Wemos D32 pro (/D32)
+https://wiki.wemos.cc/products:d32:d32_pro
++ 4MB FLASH / 4MB PSRAM (1st version)
++ 16MB FLASH / 8MB PSRAM (2nd version)
++ LOLIN I2C port, LOLIN TFT port
++ TF (uSD) card slot, supporting SPI mode.
++ schematic: https://wiki.wemos.cc/_media/products:d32:sch_d32_pro_v2.0.0.pdf
++ WROVER32 datasheet: https://www.espressif.com/sites/default/files/documentation/esp32-wrover_datasheet_en.pdf
++ official store page here: https://www.aliexpress.com/store/product/LOLIN-D32-Pro-V2-0-0-wifi-bluetooth-board-based-ESP-32-esp32-Rev1-ESP32-WROVER/1331105_32883116057.html?spm=a2g1y.12024536.productList_2559240.subject_0
 
-The second version was fitted with:
-+ 16MB FLASH
-+ 8MB PSRAM
+### uPython ESP32 features:
++ all the ESP8266 features!
++ REPL (Python prompt) over UART0.
++ 16k stack for the MicroPython task and 96k Python heap.
++ Many of MicroPython's features are enabled: unicode, arbitrary-precision integers, single-precision floats, complex numbers, frozen bytecode, as well as many of the internal modules.
++ Internal filesystem using the flash (currently 2M in size).
++ The machine module with GPIO, UART, SPI, software I2C, ADC, DAC, PWM, TouchPad, WDT and Timer.
++ The network module with WLAN (WiFi) support.
 
-See the official store page here: https://www.aliexpress.com/store/product/LOLIN-D32-Pro-V2-0-0-wifi-bluetooth-board-based-ESP-32-esp32-Rev1-ESP32-WROVER/1331105_32883116057.html?spm=a2g1y.12024536.productList_2559240.subject_0
-
-### flashing the latest micropython
+### flashing the latest micropython (for the first version with 4MB flash/4MB PSRAM)
 
 + sudo -EH pip3 install --upgrade pip
 + sudo -EH pip3 install esptool
@@ -24,9 +33,45 @@ See the official store page here: https://www.aliexpress.com/store/product/LOLIN
 + plug in the ESP32 pro and watch the result from ` dmesg`  to get the USB endpoint (let's say it's ttyUSB0)
 + `sudo chmod 666 /dev/ttyUSB0`
 + erase the flash: `esptool.py --chip esp32 --port /dev/ttyUSB0 erase_flash`
+```
+esptool.py v2.4.1
+Serial port /dev/ttyS7
+Connecting........___
+Detecting chip type... ESP32
+Chip is ESP32D0WDQ6 (revision 1)
+Features: WiFi, BT, Dual Core
+MAC: 30:ae:a4:8b:47:74
+Uploading stub...
+Running stub...
+Stub running...
+Erasing flash (this may take a while)...
+Chip erase completed successfully in 6.5s
+Hard resetting via RTS pin...
+```
+note: MAC address is shown (that's cool to enable WIFI filtering on MAC address)
 + program it now:
   + `esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 ./esp32spiram-20190214-v1.10-98-g4daee3170.bin`
-+ to open a REPL session: `sudo screen /dev/ttyS7 115200` 
+```
+esptool.py v2.4.1
+Serial port /dev/ttyS7
+Connecting....
+Detecting chip type... ESP32
+Chip is ESP32D0WDQ6 (revision 1)
+Features: WiFi, BT, Dual Core
+MAC: 30:ae:a4:8b:47:74
+Uploading stub...
+Running stub...
+Stub running...
+Configuring flash size...
+Auto-detected Flash size: 4MB
+Compressed 1046048 bytes to 653808...
+Wrote 1046048 bytes (653808 compressed) at 0x00001000 in 57.5 seconds (effective 145.6 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+```
++ then open a REPL session: `sudo screen /dev/ttyS7 115200` 
   + try `help()` for example...
 + close the REPL session (ctrl+a then `k`+`y` to confirm, use `byobu-ctrl-a emacs` if ctrl+a interferes with byobu)
 + and then you can use `ampy -p /dev/ttyUSB0 get /boot.py` to read/write to the filesystem
@@ -50,55 +95,6 @@ See the official store page here: https://www.aliexpress.com/store/product/LOLIN
 
 --- old stuff ---
 
-```
-nio@NIO-WIN10:~/MP_ESP32$ python3 -m esptool --port /dev/ttyS7 erase_flash
-esptool.py v2.4.1
-Serial port /dev/ttyS7
-Connecting........___
-Detecting chip type... ESP32
-Chip is ESP32D0WDQ6 (revision 1)
-Features: WiFi, BT, Dual Core
-MAC: 30:ae:a4:8b:47:74
-Uploading stub...
-Running stub...
-Stub running...
-Erasing flash (this may take a while)...
-Chip erase completed successfully in 6.5s
-Hard resetting via RTS pin...
-```
-note: MAC address is shown (cool to enable WIFI filtering on MAC address)
-+ programming the last firmware: `python3 -m esptool --port /dev/ttyS7 --baud 115200 write_flash --flash_mode dio --flash_size=detect 0x1000 esp32-20180630-v1.9.4-227-gab02abe9.bin`
-  + note: some examples on the net use a speed of _460800_ bauds, but I could'nt get it work (due to using ubuntu WSL on windows10?). 115200 worked fine though.
-```
-nio@NIO-WIN10:~/MP_ESP32$ python3 -m esptool --port /dev/ttyS7 --baud 115200 write_flash --flash_mode dio --flash_size=detect 0x1000 esp32-20180630-v1.9.4-227-gab02abe9.bin
-esptool.py v2.4.1
-Serial port /dev/ttyS7
-Connecting....
-Detecting chip type... ESP32
-Chip is ESP32D0WDQ6 (revision 1)
-Features: WiFi, BT, Dual Core
-MAC: 30:ae:a4:8b:47:74
-Uploading stub...
-Running stub...
-Stub running...
-Configuring flash size...
-Auto-detected Flash size: 4MB
-Compressed 1046048 bytes to 653808...
-Wrote 1046048 bytes (653808 compressed) at 0x00001000 in 57.5 seconds (effective 145.6 kbit/s)...
-Hash of data verified.
-
-Leaving...
-Hard resetting via RTS pin...
-```
-+ opening a REPL via serial port: `picocom /dev/ttyS7 -b115200` (CTRL+a+q or CTRL+a+x to exit)
-  + problem: history/up/down keys don't work?
-  + use screen instead: `sudo screen /dev/ttyS7 115200` (ctrl+a then `k`+`y` to confirm)
-+ installer https://github.com/gepd/uPiotMicroPythonTool
-  + ctr+alt+m => uPiot menu
-+ essayer ca aussi: https://github.com/bisguzar/st3-micropython-tools
-  + voir ce qui est le mieux?
-+ Utiliser Ampy pour lire/écrire en sur le FS
-
 ### Wemos D32 specs
 https://wiki.wemos.cc/products:d32:d32
 + dual core 32bit microcontroler @240Mhz
@@ -118,22 +114,7 @@ LED_BUILTIN: 5
 + Schematic: https://wiki.wemos.cc/_media/products:d32:sch_d32_v1.0.0.pdf
 + WROOM32 datasheet: https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf
 
-### Wemos D32 pro (/D32)
-https://wiki.wemos.cc/products:d32:d32_pro
-+ 4MB PSRAM
-+ LOLIN I2C port, LOLIN TFT port
-+ TF (uSD) card slot, supporting SPI mode.
-+ schematic: https://wiki.wemos.cc/_media/products:d32:sch_d32_pro_v2.0.0.pdf
-+ WROVER32 datasheet: https://www.espressif.com/sites/default/files/documentation/esp32-wrover_datasheet_en.pdf
 
-### uPython ESP32 features:
-+ all the ESP8266 features!
-+ REPL (Python prompt) over UART0.
-+ 16k stack for the MicroPython task and 96k Python heap.
-+ Many of MicroPython's features are enabled: unicode, arbitrary-precision integers, single-precision floats, complex numbers, frozen bytecode, as well as many of the internal modules.
-+ Internal filesystem using the flash (currently 2M in size).
-+ The machine module with GPIO, UART, SPI, software I2C, ADC, DAC, PWM, TouchPad, WDT and Timer.
-+ The network module with WLAN (WiFi) support.
 
 ## ESP8266
 
