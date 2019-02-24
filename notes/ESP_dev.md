@@ -45,7 +45,7 @@ See the official store page here: https://www.aliexpress.com/store/product/LOLIN
    print("File System Size {:,} - Free Space {:,}".format(fs_size, fs_free))
    > File System Size 2,072,576 - Free Space 2,068,480
 ```
-  + so we have a 4MB flash size split between 2MB for the micropython firmware, and 2MB for the filesystem.
+  + so we have a 4MB flash size split between 2MB for the micropython firmware, and 2MB for the filesystem. It makes sense!
 
 --- old stuff ---
 
