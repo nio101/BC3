@@ -32,13 +32,14 @@ See the official store page here: https://www.aliexpress.com/store/product/LOLIN
 + and then you can use `ampy -p /dev/ttyUSB0 get /boot.py` to read/write to the filesystem
 + some other basic fw-related stuff:
   + to double-check the flash size:
-```import esp
+```python
+   import esp
    esp.flash_size()
    > 4194304
 ```
-
   + to double-check the fs size:
-```import uos
+```python
+   import uos
    fs_stat = uos.statvfs('/')
    fs_size = fs_stat[0] * fs_stat[2]
    fs_free = fs_stat[0] * fs_stat[3]
