@@ -6,8 +6,8 @@ Let's start with the LOLIN ESP32 pro (https://wiki.wemos.cc/products:d32:d32_pro
 
 ### Wemos D32 pro (/D32)
 https://wiki.wemos.cc/products:d32:d32_pro
-+ 4MB FLASH / 4MB PSRAM (1st version)
-+ 16MB FLASH / 8MB PSRAM (2nd version)
++ 4MB FLASH / 4MB PSRAM (v2.0.0, green point on top)
++ 16MB FLASH / 8MB PSRAM (v2.0.0, mauve point on top)
 + LOLIN I2C port, LOLIN TFT port
 + TF (uSD) card slot, supporting SPI mode.
 + schematic: https://wiki.wemos.cc/_media/products:d32:sch_d32_pro_v2.0.0.pdf
@@ -97,6 +97,7 @@ Hard resetting via RTS pin...
 
 ### Wemos D32 specs
 https://wiki.wemos.cc/products:d32:d32
++ white point on top
 + dual core 32bit microcontroler @240Mhz
 + 512kB SRAM
 + 4MB Flash
