@@ -143,5 +143,43 @@ else:
     # 200K at the flash end is reserved for SDK params storage
 bdev = FlashBdev((size - 204800) // FlashBdev.SEC_SIZE - FlashBdev.START_SEC)
 ```
-+ then `make`, `make erase` and `make deploy`
-+ 
++ then `make`, `make erase` and `make deploy` (+`make clean` beforehand  if any makefile config has changed)
++ check_fw
+pour D32:
+```
+>>> import check_fw
+flash_size:  4194304
+File System Size 8,364,032 - Free Space 8,355,840
+stack: 1552 out of 15360
+GC: total: 127872, used: 6208, free: 121664
+ No. of 1-blocks: 29, 2-blocks: 8, max blk sz: 264, max free sz: 7203
+-----------------------------
+Initial free: 121664 allocated: 6208
+Func definition: 121664 allocated: 6208
+Func run free: 111520 allocated: 16352
+Garbage collect free: 111664 allocated: 16208
+-----------------------------
+stack: 1552 out of 15360
+GC: total: 127872, used: 16336, free: 111536
+ No. of 1-blocks: 35, 2-blocks: 8, max blk sz: 625, max free sz: 6578
+GC memory layout; from 3ffc0c70:
+```
+pour D32pro:
+```
+>>> import check_fw
+flash_size:  16777216
+File System Size 8,364,032 - Free Space 8,355,840
+stack: 1552 out of 15360
+GC: total: 4098240, used: 6240, free: 4092000
+ No. of 1-blocks: 31, 2-blocks: 8, max blk sz: 264, max free sz: 255351
+-----------------------------
+Initial free: 4092000 allocated: 6240
+Func definition: 4092000 allocated: 6240
+Func run free: 4081856 allocated: 16384
+Garbage collect free: 4082000 allocated: 16240
+-----------------------------
+stack: 1552 out of 15360
+GC: total: 4098240, used: 16368, free: 4081872
+ No. of 1-blocks: 37, 2-blocks: 8, max blk sz: 625, max free sz: 254726
+
+```
