@@ -4,15 +4,7 @@
 
 Let's start with the LOLIN ESP32 pro (https://wiki.wemos.cc/products:d32:d32_pro)
 
-### Wemos D32 pro (/D32)
-https://wiki.wemos.cc/products:d32:d32_pro
-+ 4MB FLASH / 4MB PSRAM (v2.0.0, green point on top)
-+ 16MB FLASH / 8MB PSRAM (v2.0.0, mauve point on top)
-+ LOLIN I2C port, LOLIN TFT port
-+ TF (uSD) card slot, supporting SPI mode.
-+ schematic: https://wiki.wemos.cc/_media/products:d32:sch_d32_pro_v2.0.0.pdf
-+ WROVER32 datasheet: https://www.espressif.com/sites/default/files/documentation/esp32-wrover_datasheet_en.pdf
-+ official store page here: https://www.aliexpress.com/store/product/LOLIN-D32-Pro-V2-0-0-wifi-bluetooth-board-based-ESP-32-esp32-Rev1-ESP32-WROVER/1331105_32883116057.html?spm=a2g1y.12024536.productList_2559240.subject_0
+### 
 
 ### uPython ESP32 features:
 + all the ESP8266 features!
@@ -91,30 +83,18 @@ Hard resetting via RTS pin...
    print("File System Size {:,} - Free Space {:,}".format(fs_size, fs_free))
    > File System Size 2,072,576 - Free Space 2,068,480
 ```
-  + so we have a 4MB flash size split between 2MB for the micropython firmware, and 2MB for the filesystem. It makes sense!
+  + so we have a 4MB flash size split between 2MB for the micropython firmware, and 2MB for the filesystem. It makes sense...
+  + RAM size (heap):
+```python
+import gc
+gc.collect()
+gc.mem_free()
+```
+    + gives 4092688 bytes => 4MB RAM! :)
 
 --- old stuff ---
 
-### Wemos D32 specs
-https://wiki.wemos.cc/products:d32:d32
-+ white point on top
-+ dual core 32bit microcontroler @240Mhz
-+ 512kB SRAM
-+ 4MB Flash
-+ Wifi -access point & wifi user at the same time! (^o^) -
-+ BT 4.2
-+ 22 digital IO, 6 analog input, 2 analog outputs
-+ 4x SPI, 2x I2C, 2x I2S, 2x UART
-+ 12-bit ADC, CAN, touch sensor, temperature sensor
-+ lithium battery interface (3.7V), 500mA charging current, Battery Connector: PH-2 2.0mm
-+ Pinout?
-analog inputs: VP, VN, 32, 33, 34, 35
-analog outputs: 25, 26
-LED_BUILTIN: 5
-22 digital IO
-+ Schematic: https://wiki.wemos.cc/_media/products:d32:sch_d32_v1.0.0.pdf
-+ WROOM32 datasheet: https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_en.pdf
-
+### 
 
 
 ## ESP8266
@@ -169,7 +149,7 @@ _All of the IO pins have interrupt/pwm/I2C/one-wire support except D0._
 _All of the IO pins run at 3.3V._
 + schematic: https://wiki.wemos.cc/_media/products:d1:sch_d1_mini_pro_v2.0.0.pdf
 + firmware: compiler un spécifique car 16MB non conventionnel?
-+ oui, ça fonctionne bien, en faisant comme ca:
++ oui, ça fonctionne bien, en faisant comme ca: https://github.com/micropython/micropython/issues/2335
     First of all you should have a ESP8266 board with 16MB memory. I have the Wemos D1 Pro. The description below work on a Mac.
 
     Start with upgrading the SEPTools: pip install esptool --upgrade
