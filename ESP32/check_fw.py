@@ -8,7 +8,6 @@ fs_stat = uos.statvfs('/')
 fs_size = fs_stat[0] * fs_stat[2]
 fs_free = fs_stat[0] * fs_stat[3]
 print("File System Size {:,} - Free Space {:,}".format(fs_size, fs_free))
-
 gc.collect()
 micropython.mem_info()
 print('-----------------------------')
