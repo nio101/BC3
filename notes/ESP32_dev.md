@@ -1,12 +1,16 @@
-# ESP development notes 📶
+# ESP32 development notes 📶
 
-## ESP32
+## LOLIN D32 pro
+https://wiki.wemos.cc/products:d32:d32_pro
++ 4MB FLASH / 4MB PSRAM (v2.0.0, green point on top)
++ 16MB FLASH / 8MB PSRAM (v2.0.0, mauve point on top)
++ LOLIN I2C port, LOLIN TFT port
++ TF (uSD) card slot, supporting SPI mode.
++ schematic: https://wiki.wemos.cc/_media/products:d32:sch_d32_pro_v2.0.0.pdf
++ WROVER32 datasheet: https://www.espressif.com/sites/default/files/documentation/esp32-wrover_datasheet_en.pdf
++ official store page here: https://www.aliexpress.com/store/product/LOLIN-D32-Pro-V2-0-0-wifi-bluetooth-board-based-ESP-32-esp32-Rev1-ESP32-WROVER/1331105_32883116057.html?spm=a2g1y.12024536.productList_2559240.subject_0
 
-Let's start with the LOLIN ESP32 pro (https://wiki.wemos.cc/products:d32:d32_pro)
-
-### 
-
-### uPython ESP32 features:
+## uPython ESP32 features:
 + all the ESP8266 features!
 + REPL (Python prompt) over UART0.
 + 16k stack for the MicroPython task and 96k Python heap.
@@ -15,58 +19,66 @@ Let's start with the LOLIN ESP32 pro (https://wiki.wemos.cc/products:d32:d32_pro
 + The machine module with GPIO, UART, SPI, software I2C, ADC, DAC, PWM, TouchPad, WDT and Timer.
 + The network module with WLAN (WiFi) support.
 
-### flashing the latest micropython (for the first version with 4MB flash/4MB PSRAM)
+## install the proper tools
 
++ install python3 (already available on ubuntu 18.04)
++ `sudo apt install python3-pip screen`
 + sudo -EH pip3 install --upgrade pip
-+ sudo -EH pip3 install esptool
-+ sudo -EH pip3 install adafruit-ampy
++ sudo -EH pip3 install esptool adafruit-ampy
+
+## ...and test them by flashing a ready-to-use micropython firmware
 + download firmware from https://micropython.org/download#esp32
-  + for the 4MB FLASH/4MB PSRAM version, we're using the _esp32spiram_ version of the micropython fw
+  + for the D32 pro, we're using the _esp32spiram_ version of the micropython fw
 + plug in the ESP32 pro and watch the result from ` dmesg`  to get the USB endpoint (let's say it's ttyUSB0)
 + `sudo chmod 666 /dev/ttyUSB0`
 + erase the flash: `esptool.py --chip esp32 --port /dev/ttyUSB0 erase_flash`
 ```
-esptool.py v2.4.1
-Serial port /dev/ttyS7
-Connecting........___
-Detecting chip type... ESP32
-Chip is ESP32D0WDQ6 (revision 1)
-Features: WiFi, BT, Dual Core
-MAC: 30:ae:a4:8b:47:74
+esptool.py v2.6
+Serial port /dev/ttyUSB0
+Connecting....
+Chip is ESP32D0WDQ5 (revision 1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+MAC: 30:ae:a4:cf:02:48
 Uploading stub...
 Running stub...
 Stub running...
 Erasing flash (this may take a while)...
-Chip erase completed successfully in 6.5s
+Chip erase completed successfully in 5.6s
 Hard resetting via RTS pin...
 ```
 note: MAC address is shown (that's cool to enable WIFI filtering on MAC address)
 + program it now:
-  + `esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 ./esp32spiram-20190214-v1.10-98-g4daee3170.bin`
+  + `esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 ./esp32spiram-20190516-v1.10-352-g2630d3e51.bin`
 ```
-esptool.py v2.4.1
-Serial port /dev/ttyS7
-Connecting....
-Detecting chip type... ESP32
-Chip is ESP32D0WDQ6 (revision 1)
-Features: WiFi, BT, Dual Core
-MAC: 30:ae:a4:8b:47:74
+esptool.py v2.6
+Serial port /dev/ttyUSB0
+Connecting........_
+Chip is ESP32D0WDQ5 (revision 1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+MAC: 30:ae:a4:cf:02:48
 Uploading stub...
 Running stub...
 Stub running...
+Changing baud rate to 460800
+Changed.
 Configuring flash size...
-Auto-detected Flash size: 4MB
-Compressed 1046048 bytes to 653808...
-Wrote 1046048 bytes (653808 compressed) at 0x00001000 in 57.5 seconds (effective 145.6 kbit/s)...
+Auto-detected Flash size: 16MB
+Flash params set to 0x0240
+Compressed 1221664 bytes to 743998...
+Wrote 1221664 bytes (743998 compressed) at 0x00001000 in 17.1 seconds (effective 572.4 kbit/s)...
 Hash of data verified.
 
 Leaving...
 Hard resetting via RTS pin...
 ```
-+ then open a REPL session: `sudo screen /dev/ttyS7 115200` 
++ then open a REPL session: `sudo screen /dev/ttyUSB0 115200` 
   + try `help()` for example...
+  + try `CTRL+D` for a soft reboot, the micropython firmware version will be shown
 + close the REPL session (ctrl+a then `k`+`y` to confirm, use `byobu-ctrl-a emacs` if ctrl+a interferes with byobu)
 + and then you can use `ampy -p /dev/ttyUSB0 get /boot.py` to read/write to the filesystem
+  + note: you can simplify ampy usage with:
+    + export AMPY_PORT=/dev/ttyUSB0
+
 + some other basic fw-related stuff:
   + to double-check the flash size:
 ```python
@@ -92,6 +104,126 @@ gc.mem_free()
 ```
     + gives 4092688 bytes => 4MB RAM! :)
 
++ note: `ampy -p /dev/ttyUSB0 put ./check_fw.py` and then running `import check_fw` within the REPL will show the same useful info.
+
+## flashing micropython on D32 pro
+the LOLIN D32 pro devices have various flash/RAM configuration: 4MB flash/4MB PSRAM or 16MB flash/8MB PSRAM. Currently, only 4MB of RAM seems to be usable by micropython (see http://www.packom.org/esp8266/16mb/flash/eeprom/2016/10/14/esp8266-16mbyte-flash_handling.html), and the ESP32 micropython firmware uses a hardcoded value of 2MB for the filesystem size.
+So, we are going to build a custom ESP32 fw that suits our devices, and uses all the flash available for the filesystem...
+
+## so let's start building and flashing a custom-tailored micropython firware
+
+Let's do it:
+```shell
+git clone --recurse-submodules https://github.com/micropython/micropython.git
+cd micropython
+cd ports
+cd esp32
+make
+(extract the supported git hash)
+git clone https://github.com/espressif/esp-idf.git
+cd esp-idf
+git checkout <previsouly extracted hash> 5c88c5996dbde6208e3bec05abc21ff6cd822d26
+git submodule update --init --recursive
+sudo apt-get install gcc git wget make libncurses-dev flex bison gperf python python-pip python-setuptools python-serial python-cryptography python-future python-pyparsing
+sudo -EH pip3 install pyserial pyparsing
+```
++ follow the instructions here to setup the toolchain: https://docs.espressif.com/projects/esp-idf/en/latest/get-started/linux-setup.html
++ follow then the instructions on the micropython esp32 port page to set up the makefile
++ note on the dio flag:
+> --flash_mode dio. Most ESP32 modules are using dual I/O.
+for the D32, we will then have this makefile:
+```
+ESPIDF = /home/nio/code/micropython/ports/esp32/esp-idf
+PORT = /dev/ttyUSB0
+FLASH_MODE = dio
+# 16MB or 4MB, depending on the D32
+FLASH_SIZE = 4MB
+#CROSS_COMPILE = xtensa-esp32-elf-
+# for D32 pro:
+# SDKCONFIG = boards/sdkconfig.spiram
+# for D32:
+SDKCONFIG = boards/sdkconfig
+
+include Makefile
+```
++ back to the root micropython directory: `make -C mpy-cross` to compile the micropython cross compiler
+```shell
+git submodule init lib/berkeley-db-1.xx
+git submodule update
+cd ports/esp32
+```
+
++ get the micropython-lib
+  + files in the modules/ subdir link to the micropython-lib project, and you need to clone this project on the same level as _micropython_
+  + 
+  + then try `cat ./urequests.py` in _modules/_ to check if everything is fine
+
++ OPTIONAL: freezing files/modules (see next section)
+
++ finally, just use `make` in the ports/esp32 directory to build the custom firmware
+  + if you get an error about pyparsing, juste use: `sudo pip install pyparsing` then `make` again
+  + you'll then get .bin files in the build subdirectory...
++ to flash the new firmware:
+  + `make erase`
+  + `make deploy`
+
++ now let's test it:
+```
+import esp
+esp.flash_size() 
+>4194304
+import uos
+fs_stat = uos.statvfs('/')
+fs_size = fs_stat[0] * fs_stat[2]
+fs_free = fs_stat[0] * fs_stat[3]
+print("File System Size {:,} - Free Space {:,}".format(fs_size, fs_free))
+>File System Size 2,072,576 - Free Space 2,068,480
+import gc
+gc.collect()
+gc.mem_free()
+>122304
+```
+so, for the D32, we have: 4MB flash, 2MB filesystem, 122KB RAM (out of 512KB)
+
++ Let's modify the last line of `micropython/ports/esp32/modules/flashbdev.py` to:
+```
+# 14MB here, leaving 2MB for the fw
+bdev = FlashBdev(14 * 1024 * 1024 // FlashBdev.SEC_SIZE)
+```
+```
++ then `make`, `make erase` and `make deploy` (+`make clean` beforehand  if any makefile config has changed)
++ ampy -p /dev/ttyUSB0 run ./check_fw.py:
+flash_size:  16777216
+File System Size 14,651,392 - Free Space 14,647,296
+stack: 736 out of 15360
+GC: total: 4098240, used: 6720, free: 4091520
+```
+
+## frozen modules and files
+
+The previous process can be done over again while putting new files in _modules/_.
+They will be pre-compiled and made available in the firmware, reducing the loading time.
+
+## try the unix port
+
++ sudo apt-get install build-essential libreadline-dev libffi-dev git pkg-config
++ make axtls
++ make
++ micropython
++ micropython -m upip install micropython-pystone
++ micropython
+  >>> import pystone
+  >>> pystone.main()
+  Pystone(1.2) time for 50000 passes = 0.724
+This machine benchmarks at 69060.8 pystones/second
+
+## how to use upip on device?
++ from inside the REPL:
+  + import upip
+  + upip.install("micropython-pystone_lowmem")
+  + import pystone_lowmem
+  + pystone_lowmem.main()
+
 --- old stuff ---
 
 ### 
@@ -115,7 +247,7 @@ Supported features include:
     WebREPL over WiFi from a browser (clients at https://github.com/micropython/webrepl).
     Modules for HTTP, MQTT, many other formats and protocols via https://github.com/micropython/micropython-lib .
 
-Work-in-progress documentation is available at http://docs.micropython.org/en/latest/esp8266/ .
+Work-in-progress documentation is available at http://docs.micropython.org/en/latest/esp8266/.
 
 ### Wemos D1 pro specs
 https://wiki.wemos.cc/products:d1:d1_mini_pro
@@ -254,8 +386,6 @@ print("File System Size {:,} - Free Space {:,}".format(fs_size, fs_free))
 + a good basic boot.py script:
 ```python
 # boot.py
-
-
 def wlan_connect(ssid='KNET_nio101', password='netgear99A', hostname='wemos-d32-one'):
     import network
     wlan = network.WLAN(network.STA_IF)
@@ -270,4 +400,3 @@ def wlan_connect(ssid='KNET_nio101', password='netgear99A', hostname='wemos-d32-
 
 wlan_connect()
 ```
-

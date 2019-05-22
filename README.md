@@ -1,6 +1,10 @@
 # Basecamp III ⛺
 My home automation solution
 
++ add rpiZero when/if needed?
+  + very good price, good horsepower
+  + if always on & with main power available
+
 ## Design ✏️
 We we'll be using the following hardware/software:
 ### _**bc-hq**_ 💻
